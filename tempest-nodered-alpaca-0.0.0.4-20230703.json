@@ -125,9 +125,7 @@
         "x": 680,
         "y": 220,
         "wires": [
-            [
-                "b89dcbfeb14f4ae5"
-            ]
+            []
         ]
     },
     {
@@ -1316,31 +1314,8 @@
         "x": 660,
         "y": 400,
         "wires": [
-            [
-                "5c6e25eb361c2d60",
-                "b89dcbfeb14f4ae5"
-            ]
+            []
         ]
-    },
-    {
-        "id": "5c6e25eb361c2d60",
-        "type": "pushover",
-        "z": "40c78e1d03c2be2c",
-        "name": "",
-        "device": "",
-        "title": "Lightning Warning",
-        "priority": "1",
-        "sound": "",
-        "url": "",
-        "url_title": "",
-        "html": false,
-        "credentials": {
-            "deviceid": "",
-            "pushkey": ""
-        },
-        "x": 910,
-        "y": 400,
-        "wires": []
     },
     {
         "id": "b441890b143a3c5d",
@@ -1380,124 +1355,7 @@
         "x": 100,
         "y": 120,
         "wires": [
-            [
-                "b89dcbfeb14f4ae5"
-            ]
-        ]
-    },
-    {
-        "id": "71bbf3522a481ef0",
-        "type": "function",
-        "z": "40c78e1d03c2be2c",
-        "name": "Alert on Unsafe",
-        "func": "var roofStatus = global.get('roofStatus') || \"OPEN\"; // Get the roofStatus global variable\nvar warnPeriod = flow.get('warnPeriod') || 6 * 60 * 60;\nvar resetPeriod = flow.get('safetyReset') || 900;\nvar lastUnsafeTime = flow.get('lastUnsafeTime') || 0;\n\n// Get flag variables\nvar rainFlag = flow.get('rainFlag') || false;\nvar windFlag = flow.get('windFlag') || false;\nvar lightningFlag = flow.get('lightningFlag') || false;\n\n// Get wasSafe variable\nvar wasSafe = flow.get('isSafe');\n\n// Get timerFlag variable, or set it to a timestamp more than 6 hours in the past if it doesn't exist\nvar currentTime = Math.floor(new Date().getTime() / 1000); // Get current timestamp\nvar timerFlag = flow.get('timerFlag') || (currentTime - warnPeriod - 1);\n\n// Determine safety condition based on flags\nvar isSafe = !(rainFlag || windFlag || lightningFlag); \n\nif (!isSafe) {\n    flow.set('lastUnsafeTime', currentTime);\n}\n\n// Temporary change for debugging OPEN issues:\n//roofStatus = \"OPEN\";\n// End of Temporary Change\n\n\nif (!isSafe && wasSafe) {\n    // Condition is unsafe, was previously safe, and roof is open\n    flow.set('isSafe', false); // Set isSafe to false\n    if ( roofStatus === \"OPEN\") {\n        flow.set('timerFlag', currentTime); // Set timerFlag to current timestamp\n        return [{payload: \"unsafe\"}, {payload: \"unsafe\"}]; // Send the \"unsafe\" message on output 2\n    } else {\n        return [{payload: \"unsafe\"}, null];\n    }\n} else if ((isSafe && !wasSafe) && (currentTime - lastUnsafeTime > resetPeriod)) {\n    // Condition is safe and was previously unsafe\n    flow.set('isSafe', true); // Set isSafe to true\n    // Check if less than 6 hours have passed since timerFlag was set\n    if (currentTime - timerFlag <= warnPeriod) {\n        // If less than 6 hours have passed\n        return [{payload: \"safe\"}, {payload: \"safe\"}]; // Send the \"safe\" message on both outputs\n    } else {\n        // If more than 6 hours have passed\n        flow.set('timerFlag', currentTime - warnPeriod  - 1); // Reset timerFlag\n        return [{payload: \"safe\"}, null]; // Send the \"safe\" message on output 1\n    }\n}\n\nreturn null; // Don't send any message\n",
-        "outputs": 2,
-        "noerr": 0,
-        "initialize": "var wasSafe = flow.set('isSafe', true);",
-        "finalize": "",
-        "libs": [],
-        "x": 1220,
-        "y": 220,
-        "wires": [
-            [
-                "1b519f0e941bc33a"
-            ],
-            [
-                "41660123ed86236d",
-                "f77cf942e4acf426"
-            ]
-        ]
-    },
-    {
-        "id": "1b519f0e941bc33a",
-        "type": "debug",
-        "z": "40c78e1d03c2be2c",
-        "name": "Safety Conditions - No Alert",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1480,
-        "y": 180,
-        "wires": []
-    },
-    {
-        "id": "41660123ed86236d",
-        "type": "function",
-        "z": "40c78e1d03c2be2c",
-        "name": "Create Pushover Notification",
-        "func": "// Check if the payload is \"safe\" or \"unsafe\"\nif (msg.payload === \"unsafe\") {\n    // If it's unsafe, prepare a high-priority warning message\n    return {\n        payload: {\n            topic: \"Unsafe Observing Conditions\",\n            message: \"WARNING - Unsafe observing conditions detected and roof is open!\",\n            priority: 2\n        }\n    };\n} else if (msg.payload === \"safe\") {\n    // If it's safe, prepare a lower-priority notice message\n    return {\n        payload: {\n            topic: \"Safe for Observing\",\n            message: \"Notice - Safe observing conditions have been restored.\",\n            priority: 1\n        }\n    };\n}\n\n// If the payload isn't \"safe\" or \"unsafe\", don't send a message\nreturn null;\n",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 1480,
-        "y": 220,
-        "wires": [
-            [
-                "823f698bfa709a69"
-            ]
-        ]
-    },
-    {
-        "id": "823f698bfa709a69",
-        "type": "pushover",
-        "z": "40c78e1d03c2be2c",
-        "name": "Safety Conditions Notifications",
-        "device": "",
-        "title": "",
-        "priority": "",
-        "sound": "",
-        "url": "",
-        "url_title": "",
-        "html": false,
-        "credentials": {
-            "deviceid": "",
-            "pushkey": ""
-        },
-        "x": 1790,
-        "y": 220,
-        "wires": []
-    },
-    {
-        "id": "f77cf942e4acf426",
-        "type": "debug",
-        "z": "40c78e1d03c2be2c",
-        "name": "Safety Conditions - Alert",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1470,
-        "y": 260,
-        "wires": []
-    },
-    {
-        "id": "b89dcbfeb14f4ae5",
-        "type": "function",
-        "z": "40c78e1d03c2be2c",
-        "name": "Safety Monitor (consoldiated)",
-        "func": "var currentData = flow.get('tempestData'); // Get current data from the Tempest weather station\nvar resetPeriod = flow.get('safetyReset') || 900; // Get safety reset period\n\n// Variables for rain\nvar rainFlag = flow.get('rainFlag') || false;\nvar lastRainTime = flow.get('lastRainTime') || 0;\nvar rainThreshold = flow.get('rainThreshold') || 0;\n\n// Variables for wind\nvar windFlag = flow.get('windFlag') || false;\nvar lastWindEventTime = flow.get('lastWindEventTime') || 0;\nvar windThreshold = flow.get('windThreshold') || 20 / 3.6;\nvar gustThreshold = flow.get('gustThreshold') || 35 / 3.6;\n\n// Variables for lightning\nvar lightningFlag = flow.get('lightningFlag') || false;\nvar lastLightning = flow.get('lastLightning') || 0;\nvar strikeThreshold = flow.get('strikeThreshold') || 5;\n\nvar currentTime = Date.now() / 1000; // Get current time (in seconds)\n\n// Check rain\nif (currentData) {\n    var rainRate = currentData.rainAmountOverPreviousMinute;\n    if (rainRate > rainThreshold || msg.payload.type == \"evt_precip\") {\n        rainFlag = true;\n        lastRainTime = currentData.timestamp;\n    } else if (currentTime - lastRainTime > resetPeriod) {\n        rainFlag = false;\n    }\n    flow.set('rainFlag', rainFlag);\n    flow.set('lastRainTime', lastRainTime);\n\n    // Check wind\n    var windSpeed = currentData.windAvg;\n    var windGust = currentData.windGust;\n    if (windSpeed >= windThreshold || windGust >= gustThreshold) {\n        windFlag = true;\n        lastWindEventTime = currentData.timestamp;\n    } else if (currentTime - lastWindEventTime > resetPeriod) {\n        windFlag = false;\n    }\n    flow.set('windFlag', windFlag);\n    flow.set('lastWindEventTime', lastWindEventTime);\n}\n\n// Check lightning\nif (msg.payload.type === 'evt_strike') {\n    var event = msg.payload.evt;\n    var strikeDistance = event[1];\n    if (strikeDistance < strikeThreshold) {\n        flow.set('lastLightning', currentTime);\n        lightningFlag = true;\n    }\n} else if ((currentTime - lastLightning) > resetPeriod) {\n    lightningFlag = false;\n}\nflow.set('lightningFlag', lightningFlag);\n\n// Finally, check if any unsafe flag is set and return the appropriate message\nif (rainFlag || windFlag || lightningFlag) {\n    return { payload: \"unsafe\" };\n} else {\n    return { payload: \"safe\" };\n}\n\nreturn null;\n",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 960,
-        "y": 220,
-        "wires": [
-            [
-                "71bbf3522a481ef0"
-            ]
+            []
         ]
     },
     {
