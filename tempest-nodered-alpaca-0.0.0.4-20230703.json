@@ -1,0 +1,2181 @@
+[
+    {
+        "id": "40c78e1d03c2be2c",
+        "type": "tab",
+        "label": "ASCOM Alpaca Service for Tempest",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "98d6f87d7168723f",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Temperature",
+        "url": "/api/v1/observingconditions/0/temperature",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 460,
+        "wires": [
+            [
+                "72cf303a30495685"
+            ]
+        ]
+    },
+    {
+        "id": "72cf303a30495685",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Serve Temperature",
+        "func": "let weatherData = flow.get('tempestData');\nlet temperature = weatherData ? weatherData.airTemperature : null;\n\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": temperature\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 460,
+        "wires": [
+            [
+                "a8955c34e8120e88"
+            ]
+        ]
+    },
+    {
+        "id": "a8955c34e8120e88",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 510,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "ef9d612f677c4887",
+        "type": "weatherflow-observation-air",
+        "z": "40c78e1d03c2be2c",
+        "hub": "92dbd5a05708c0ca",
+        "x": 120,
+        "y": 280,
+        "wires": [
+            [
+                "fd7f1b353b59d1bf"
+            ]
+        ]
+    },
+    {
+        "id": "7379c0c712492c4f",
+        "type": "debug",
+        "z": "40c78e1d03c2be2c",
+        "name": "Tempest Data (UDP)",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 420,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "4f414d35afd76536",
+        "type": "weatherflow-observation-tempest",
+        "z": "40c78e1d03c2be2c",
+        "hub": "92dbd5a05708c0ca",
+        "x": 140,
+        "y": 220,
+        "wires": [
+            [
+                "7379c0c712492c4f",
+                "a5a6c50c4e80d58e"
+            ]
+        ]
+    },
+    {
+        "id": "55fef5b6a9870606",
+        "type": "weatherflow-observation-sky",
+        "z": "40c78e1d03c2be2c",
+        "hub": "92dbd5a05708c0ca",
+        "x": 130,
+        "y": 340,
+        "wires": [
+            [
+                "0dfdd5787ede4df2"
+            ]
+        ]
+    },
+    {
+        "id": "a5a6c50c4e80d58e",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Update Tempest Data",
+        "func": "flow.set('tempestData', msg.payload);\nflow.set('lastUpdateTime', Date.now());\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nflow.set('lastUpdateTime', Date.now() );",
+        "finalize": "",
+        "libs": [],
+        "x": 680,
+        "y": 220,
+        "wires": [
+            [
+                "b89dcbfeb14f4ae5"
+            ]
+        ]
+    },
+    {
+        "id": "addb57520027bf92",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Serve Humidity",
+        "func": "let weatherData = flow.get('tempestData');\nlet humidity = weatherData ? weatherData.relativeHumidity : null;\n\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": humidity\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 520,
+        "wires": [
+            [
+                "2dc3d303575dd47d"
+            ]
+        ]
+    },
+    {
+        "id": "7f9ec79a566eb39e",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Humidity",
+        "url": "/api/v1/observingconditions/0/humidity",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 520,
+        "wires": [
+            [
+                "addb57520027bf92"
+            ]
+        ]
+    },
+    {
+        "id": "2dc3d303575dd47d",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 510,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "c82d36db2e841685",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Serve Dew Point",
+        "func": "let tempestData = flow.get('tempestData');\nif (!tempestData) {\n    node.error(\"No tempestData available\");\n    return null;\n}\n\nlet temp = tempestData.airTemperature; // Get the air temperature from the tempestData\nlet rh = tempestData.relativeHumidity; // Get the relative humidity from the tempestData\n\n// Define the function to calculate the dew point\nfunction calculateDewPoint(temp, rh) {\n    let a = 17.27;\n    let b = 237.7;\n    let alpha = ((a * temp) / (b + temp)) + Math.log(rh/100.0);\n    let dewPoint = (b * alpha) / (a - alpha);\n    return dewPoint;\n}\n\nlet dewPoint = calculateDewPoint(temp, rh);\ndewPoint = Number(dewPoint.toFixed(2));\n\n// Add the dew point to the message payload\nmsg.payload = {\n    \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n    \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n    \"ErrorNumber\": 0,\n    \"ErrorMessage\": \"\",\n    \"Value\": dewPoint\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 580,
+        "wires": [
+            [
+                "1d59b7fbbb833aa8"
+            ]
+        ]
+    },
+    {
+        "id": "f7efc15a1565d873",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Dew Point",
+        "url": "/api/v1/observingconditions/0/dewpoint",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 580,
+        "wires": [
+            [
+                "c82d36db2e841685"
+            ]
+        ]
+    },
+    {
+        "id": "1d59b7fbbb833aa8",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 510,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "53385463a59b7196",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Serve Pressure",
+        "func": "let weatherData = flow.get('tempestData');\nlet pressure = weatherData ? weatherData.stationPressure : null;\nlet temperature = weatherData ? weatherData.airTemperature : null;\n\nfunction calculateSeaLevelPressure(pressureMB, temperatureC) {\n    const altitudeM = 1119.5\n    const g = 9.80665;\n    const M = 0.0289644;\n    const R = 8.3144598;\n\n    let pressurePa = pressureMB * 100; // Convert from millibars to Pascals\n    let temperatureK = temperatureC + 273.15; // Convert from Celsius to Kelvin\n\n    let pressureSeaLevelPa = pressurePa * Math.exp((g * M * altitudeM) / (R * temperatureK));\n    let pressureSeaLevelMB = pressureSeaLevelPa / 100; // Convert back to millibars\n\n    return pressureSeaLevelMB;\n}\n\npressure = calculateSeaLevelPressure(pressure, temperature);\npressure = parseFloat(pressure.toFixed(1));\n\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": pressure\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 640,
+        "wires": [
+            [
+                "7f9c49dd0841a69f"
+            ]
+        ]
+    },
+    {
+        "id": "b385fcbf37d7f945",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Pressure",
+        "url": "/api/v1/observingconditions/0/pressure",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 640,
+        "wires": [
+            [
+                "53385463a59b7196"
+            ]
+        ]
+    },
+    {
+        "id": "7f9c49dd0841a69f",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 510,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "dfa1a3bc5ea796a0",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Rain Rate",
+        "url": "/api/v1/observingconditions/0/rainrate",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 700,
+        "wires": [
+            [
+                "6c859bce58febbc9"
+            ]
+        ]
+    },
+    {
+        "id": "e0896c43e7b3e3ee",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 510,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "6c859bce58febbc9",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Serve Rain Rate",
+        "func": "let weatherData = flow.get('tempestData');\nlet rain = weatherData ? weatherData.rainAmountOverPreviousMinute : null;\n\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": rain * 60.0\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 700,
+        "wires": [
+            [
+                "e0896c43e7b3e3ee"
+            ]
+        ]
+    },
+    {
+        "id": "1d84c97f1bedfbe9",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Sky Brightness",
+        "url": "/api/v1/observingconditions/0/skybrightness",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 760,
+        "wires": [
+            [
+                "bda32095e5cf04c9"
+            ]
+        ]
+    },
+    {
+        "id": "4110eeea70afe4c6",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 510,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "bda32095e5cf04c9",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Serve Brightness",
+        "func": "let weatherData = flow.get('tempestData');\nlet bright = weatherData ? weatherData.illuminance : null;\n\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": bright\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 760,
+        "wires": [
+            [
+                "4110eeea70afe4c6"
+            ]
+        ]
+    },
+    {
+        "id": "a3a1932266a45d6d",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Wind Direction",
+        "url": "/api/v1/observingconditions/0/winddirection",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 820,
+        "wires": [
+            [
+                "e9b68416985a5625"
+            ]
+        ]
+    },
+    {
+        "id": "4d80e240361b6857",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 510,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "e9b68416985a5625",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Serve Wind Direction",
+        "func": "let weatherData = flow.get('tempestData');\nlet direction = weatherData ? weatherData.windDirection : null;\n\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": direction\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 820,
+        "wires": [
+            [
+                "4d80e240361b6857"
+            ]
+        ]
+    },
+    {
+        "id": "b3801dab8cf86532",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Wind Speed",
+        "url": "/api/v1/observingconditions/0/windspeed",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 880,
+        "wires": [
+            [
+                "0a4945607f1bcf7c"
+            ]
+        ]
+    },
+    {
+        "id": "53a0ecd67826eb6c",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 510,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "0a4945607f1bcf7c",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Serve Wind Speed",
+        "func": "let weatherData = flow.get('tempestData');\nlet speed = weatherData ? weatherData.windAvg : null;\n\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": speed\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 880,
+        "wires": [
+            [
+                "53a0ecd67826eb6c"
+            ]
+        ]
+    },
+    {
+        "id": "98be6274bdc790b3",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Wind Gust",
+        "url": "/api/v1/observingconditions/0/windgust",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 940,
+        "wires": [
+            [
+                "b37eef283cc6e6cb"
+            ]
+        ]
+    },
+    {
+        "id": "9d0f62b63b08772f",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 510,
+        "y": 940,
+        "wires": []
+    },
+    {
+        "id": "b37eef283cc6e6cb",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Serve Wind Gust",
+        "func": "let weatherData = flow.get('tempestData');\nlet gust = weatherData ? weatherData.windGust : null;\n\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": gust\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 940,
+        "wires": [
+            [
+                "9d0f62b63b08772f"
+            ]
+        ]
+    },
+    {
+        "id": "fd7f1b353b59d1bf",
+        "type": "debug",
+        "z": "40c78e1d03c2be2c",
+        "name": "Air Data (UDP)",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "0dfdd5787ede4df2",
+        "type": "debug",
+        "z": "40c78e1d03c2be2c",
+        "name": "Sky Data (UDP)",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "ca9945239d0a3b63",
+        "type": "comment",
+        "z": "40c78e1d03c2be2c",
+        "name": "Notes",
+        "info": "# **ASCOM Alpaca Interface for Tempest Weather Station**\nDepends upon _node-red-contrib-weatherflow-udp_ pallette.\n\n  Alpaca API Reference: https://ascom-standards.org/api/#/<br>\n  Tempest UPD Reference: https://weatherflow.github.io/Tempest/api/udp/v171/\n\nListens on 0.0.0.0:50222.  Change this in the Tempest UDP nodes as required.\n\nNo error checking or common functionality implemented at this time.\n\nDew Point is calculated from humidity, pressure and temperature - may not match Tempest app.\n\nAir pressure is calculated from station pressure, altitude and temperature.\n**NOTE**: Altitude is fixed - change this in the node titled \"**Serve Pressure**\".\n\n### TO DO:\n - Improve error checking and handling\n - Implement averaging period\n - Establish watchdog to check / report connected state",
+        "x": 110,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "6c3e21fd969e869a",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Connected",
+        "url": "/api/v1/observingconditions/0/connected",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 680,
+        "y": 460,
+        "wires": [
+            [
+                "01c4d6ff778ed142"
+            ]
+        ]
+    },
+    {
+        "id": "01c4d6ff778ed142",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "GET Connected",
+        "func": "\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": true // TODO: Revise to trigger state from watchdog timer\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 460,
+        "wires": [
+            [
+                "bf7ed1a89219e955"
+            ]
+        ]
+    },
+    {
+        "id": "bf7ed1a89219e955",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1070,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "49428bc1a9d46365",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Name",
+        "url": "/api/v1/observingconditions/0/name",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 670,
+        "y": 520,
+        "wires": [
+            [
+                "9401df924fdade3f"
+            ]
+        ]
+    },
+    {
+        "id": "9401df924fdade3f",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "GET Name",
+        "func": "\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": \"Tempest\" // Change this later... static for now\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 870,
+        "y": 520,
+        "wires": [
+            [
+                "1de94f0ee3ab3687"
+            ]
+        ]
+    },
+    {
+        "id": "1de94f0ee3ab3687",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1070,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "73cda3e2f00d8ff4",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Description",
+        "url": "/api/v1/observingconditions/0/description",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 680,
+        "y": 580,
+        "wires": [
+            [
+                "1bbbf7d402ff2106"
+            ]
+        ]
+    },
+    {
+        "id": "1bbbf7d402ff2106",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "GET Description",
+        "func": "\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": \"Tempest Weather Station via NodeRED\" // Change this later... static for now\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 580,
+        "wires": [
+            [
+                "9152077d3d67883d"
+            ]
+        ]
+    },
+    {
+        "id": "9152077d3d67883d",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1070,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "e5ac762a00f4bb74",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Driver Info",
+        "url": "/api/v1/observingconditions/0/driverinfo",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 680,
+        "y": 640,
+        "wires": [
+            [
+                "1bb29a5a5fa9d027"
+            ]
+        ]
+    },
+    {
+        "id": "1bb29a5a5fa9d027",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "GET DriverInfo",
+        "func": "let version = flow.get('version');\n\n\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": version\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 640,
+        "wires": [
+            [
+                "34b8f90a8d6e5762"
+            ]
+        ]
+    },
+    {
+        "id": "34b8f90a8d6e5762",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1070,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "48880cd531494616",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Driver Version",
+        "url": "/api/v1/observingconditions/0/driverversion",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 690,
+        "y": 700,
+        "wires": [
+            [
+                "9540114734be3851"
+            ]
+        ]
+    },
+    {
+        "id": "9540114734be3851",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "GET DriverInfo",
+        "func": "let version = flow.get('version');\n\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": version\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 700,
+        "wires": [
+            [
+                "72f1729357028e75"
+            ]
+        ]
+    },
+    {
+        "id": "72f1729357028e75",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1070,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "479da257695822b9",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Interface Version",
+        "url": "/api/v1/observingconditions/0/interfaceversion",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 700,
+        "y": 760,
+        "wires": [
+            [
+                "530a797c7094dd3d"
+            ]
+        ]
+    },
+    {
+        "id": "530a797c7094dd3d",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "GET Interface",
+        "func": "\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": 1 // Change this later... static for now\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 760,
+        "wires": [
+            [
+                "d713900bc0f7f951"
+            ]
+        ]
+    },
+    {
+        "id": "d713900bc0f7f951",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1070,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "c0215e5b6a565220",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Supported Actions",
+        "url": "/api/v1/observingconditions/0/supportedactions",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 710,
+        "y": 820,
+        "wires": [
+            [
+                "56cba34967c3492f"
+            ]
+        ]
+    },
+    {
+        "id": "56cba34967c3492f",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "GET Actions",
+        "func": "\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": [] // Change this later... static for now\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 890,
+        "y": 820,
+        "wires": [
+            [
+                "5de40767752dd81d"
+            ]
+        ]
+    },
+    {
+        "id": "5de40767752dd81d",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1070,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "0f7d293c67ad9951",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "AveragePeriod",
+        "url": "/api/v1/observingconditions/0/averageperiod",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 1260,
+        "y": 460,
+        "wires": [
+            [
+                "b4b65f61b52056fc"
+            ]
+        ]
+    },
+    {
+        "id": "b4b65f61b52056fc",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "GET Average Period",
+        "func": "\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": 0.0 // Change this later... static for now\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1480,
+        "y": 460,
+        "wires": [
+            [
+                "86bde71ddfd1950f"
+            ]
+        ]
+    },
+    {
+        "id": "86bde71ddfd1950f",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1670,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "7431730b0418573d",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "AveragePeriod",
+        "url": "/api/v1/observingconditions/0/averageperiod",
+        "method": "put",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 1260,
+        "y": 520,
+        "wires": [
+            [
+                "cf686408afbdb9b0",
+                "720652c750e5f99c"
+            ]
+        ]
+    },
+    {
+        "id": "cf686408afbdb9b0",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "PUT Average Period",
+        "func": "var averagePeriod = parseFloat(msg.payload.AveragePeriod);\n\nif (averagePeriod < -1.0) {\n    msg.payload = {\n        \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n        \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n        \"ErrorNumber\": 0x401, // Put the error number you wish here\n        \"ErrorMessage\": \"AveragePeriod value is less than -1.0\", // Put the error message you wish here\n    };\n} else {\n    msg.payload = {\n        \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n        \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n        \"ErrorNumber\": 0,\n        \"ErrorMessage\": \"\",\n    };\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1480,
+        "y": 520,
+        "wires": [
+            [
+                "45ff3c727f081e88",
+                "b875b0210489794d"
+            ]
+        ]
+    },
+    {
+        "id": "45ff3c727f081e88",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1670,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "3ce939cd1cbdf97d",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Cloud Cover **",
+        "url": "/api/v1/observingconditions/0/cloudcover",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 1260,
+        "y": 640,
+        "wires": [
+            [
+                "3eb9c1da78975048"
+            ]
+        ]
+    },
+    {
+        "id": "3eb9c1da78975048",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Not Implemented",
+        "func": "\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0x400,\n   \"ErrorMessage\": \"Not Implemented\"\n   //\"Value\": null\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1470,
+        "y": 640,
+        "wires": [
+            [
+                "44a8302e04a1a5d1"
+            ]
+        ]
+    },
+    {
+        "id": "44a8302e04a1a5d1",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1670,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "b7a3aff8a52ba4e9",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Sky Quality **",
+        "url": "/api/v1/observingconditions/0/skyquality",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 1250,
+        "y": 700,
+        "wires": [
+            [
+                "3eb9c1da78975048"
+            ]
+        ]
+    },
+    {
+        "id": "629228121faf988e",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Sky Temperature **",
+        "url": "/api/v1/observingconditions/0/skytemperature",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 1270,
+        "y": 760,
+        "wires": [
+            [
+                "3eb9c1da78975048"
+            ]
+        ]
+    },
+    {
+        "id": "e353187fb218c0f7",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Star FWHM **",
+        "url": "/api/v1/observingconditions/0/starfwhm",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 1250,
+        "y": 820,
+        "wires": [
+            [
+                "3eb9c1da78975048"
+            ]
+        ]
+    },
+    {
+        "id": "a46843bfa292473e",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Refresh",
+        "url": "/api/v1/observingconditions/0/refresh",
+        "method": "put",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 1230,
+        "y": 880,
+        "wires": [
+            [
+                "3eb9c1da78975048"
+            ]
+        ]
+    },
+    {
+        "id": "513643435488e21b",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Time Since Last Update",
+        "url": "/api/v1/observingconditions/0/timesincelastupdate",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 1140,
+        "wires": [
+            [
+                "3b438d39b3c9fd65",
+                "128e2526610cd0c4"
+            ]
+        ]
+    },
+    {
+        "id": "3b438d39b3c9fd65",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Serve Last Update Time",
+        "func": "// Note - I am ignoring what device is being queried as all are updated together\n\nlet lastUpdate = flow.get('lastUpdateTime');\nlet seconds = (Date.now() - lastUpdate) / 1000.0;\n\n\n// The list of implemented sensor names\nvar implementedSensors = ['', 'Pressure', 'Temperature', 'Humidity', 'DewPoint', 'RainRate', 'SkyBrightness', 'WindDirection', 'WindSpeed', 'WindGust'];\n// The list of unimplemented sensor names\nvar unimplementedSensors = ['SkyQuality', 'SkyTemperature', 'StarFWHM', 'CloudCover'];\n\nvar sensorName = msg.req.query.SensorName;\n\n// Check if sensorName is in the implemented sensors array\nif (implementedSensors.includes(sensorName)) {\n\n    msg.payload = {\n        \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n        \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n        \"ErrorNumber\": 0,\n        \"ErrorMessage\": \"\",\n        \"Value\": seconds\n    };\n\n    \n//} else if (unimplementedSensors.includes(sensorName) || !sensorName) {\n//    // Direct it to output 2 if sensorName is in the unimplemented sensors array or if sensorName is undefined\n//    return [null, msg];\n} else {\n    // Direct it to output 2 if sensorName is not in either array\n    msg.payload = {\n        \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n        \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n        \"ErrorNumber\": 0x400,\n        \"ErrorMessage\": \"Not Implemented\"\n        //\"Value\": null\n    };\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 1140,
+        "wires": [
+            [
+                "d1654bc5140af96c"
+            ]
+        ]
+    },
+    {
+        "id": "d1654bc5140af96c",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 670,
+        "y": 1140,
+        "wires": []
+    },
+    {
+        "id": "128e2526610cd0c4",
+        "type": "debug",
+        "z": "40c78e1d03c2be2c",
+        "name": "Time Since Last Update Query Records",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "req.query.SensorName",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 500,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "7bed73e204fe5cfa",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Sensor Descriptions",
+        "url": "/api/v1/observingconditions/0/sensordescription",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 1260,
+        "wires": [
+            [
+                "0a3e23a14954a6e4",
+                "16c8b8f99686c804"
+            ]
+        ]
+    },
+    {
+        "id": "0a3e23a14954a6e4",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Serve Descriptions",
+        "func": "// The list of implemented sensor names\nvar implementedSensors = ['', 'Pressure', 'Temperature', 'Humidity', 'DewPoint', 'RainRate', 'SkyBrightness', 'WindDirection', 'WindSpeed', 'WindGust'];\n// The list of unimplemented sensor names\nvar unimplementedSensors = ['SkyQuality', 'SkyTemperature', 'StarFWHM', 'CloudCover'];\n\nvar sensorName = msg.req.query.SensorName;\n\n// Check if sensorName is in the implemented sensors array\nif (implementedSensors.includes(sensorName)) {\n\n    msg.payload = {\n        \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n        \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n        \"ErrorNumber\": 0,\n        \"ErrorMessage\": \"\",\n        \"Value\": \"WeatherFlow Tempest Weather Station\"\n    };\n\n    \n//} else if (unimplementedSensors.includes(sensorName) || !sensorName) {\n//    // Direct it to output 2 if sensorName is in the unimplemented sensors array or if sensorName is undefined\n//    return [null, msg];\n} else {\n    // Direct it to output 2 if sensorName is not in either array\n    msg.payload = {\n        \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n        \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n        \"ErrorNumber\": 0x400,\n        \"ErrorMessage\": \"Not Implemented\"\n        //\"Value\": null\n    };\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 1260,
+        "wires": [
+            [
+                "ce34487df0f664e5"
+            ]
+        ]
+    },
+    {
+        "id": "ce34487df0f664e5",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 670,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "16c8b8f99686c804",
+        "type": "debug",
+        "z": "40c78e1d03c2be2c",
+        "name": "Sensor Description Query Records",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "req.query.SensorName",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 480,
+        "y": 1220,
+        "wires": []
+    },
+    {
+        "id": "720652c750e5f99c",
+        "type": "debug",
+        "z": "40c78e1d03c2be2c",
+        "name": "PUT AveragePeriod Debug",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "req",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1500,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "b875b0210489794d",
+        "type": "debug",
+        "z": "40c78e1d03c2be2c",
+        "name": "PUT AveragePeriod Output",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1800,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "68489f7cd89e4a7b",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Set Flow Info Variables",
+        "func": "// ** See OnStart tab**\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\nvar version = \"0.0.0.4-20230703\";\n\n// Set Safety Monitor Thresholds:\n\nvar windThreshold = 15 / 3.6;       // Average windspeed threshold in m/s\nvar gustThreshold = 30 / 3.6;       // Wind gust threshold in m/s\nvar strikeThreshold = 5.0;          // Lightning strike threshold in km\nvar rainThreshold = 0.0;            // Rainfall threshold in mm/min;\n\n// Reset Period\n//\n//   Safety status returns to 'true' after an unsafe condition if\n//   conditions remain safe for this long.\nvar safetyReset = 15 * 60;          // Reset period in seconds\nvar warnPeriod =  6 * 60 * 60;      // Reset Pushover notices after this period\n\n\n// API Keys for Pushover notifications:\nvar pushoverAPIKey = \"\";\nvar pushoverAPP = \"\";\n\n// Server configuration\nvar alpacaPort = 11111;              // To use something other than the NodeRED port (1880)\n                                     // you need to set up port forwarding\n\nvar alpacaUID = \"b89a72c3-24f6-4dc1-84b4-9831e65b7ae3\";  // You can reuse this but if implementing more than one Tempest driver on the network, each should have a unique ID\n\n// Store variables for use elsewhere in this flow:\nflow.set('version', version);\nflow.set('windThreshold', windThreshold);\nflow.set('gustThreshold', gustThreshold);\nflow.set('strikeThreshld', strikeThreshold);\nflow.set('rainThreshold', rainThreshold);\nflow.set('pushoverAPI', pushoverAPIKey);\nflow.set('pushoverAPP', pushoverAPP);\nflow.set('safetyReset', safetyReset);\nflow.set('warnPeriod', warnPeriod);\nflow.set('alpacaPort', alpacaPort);\nflow.set('alpacaUID', alpacaUID);",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4cfbca55efe14365",
+        "type": "weatherflow-lightning-strike",
+        "z": "40c78e1d03c2be2c",
+        "hub": "92dbd5a05708c0ca",
+        "x": 120,
+        "y": 400,
+        "wires": [
+            [
+                "d39e58b86c5d6e7d",
+                "8ce3dab90d6641de"
+            ]
+        ]
+    },
+    {
+        "id": "d39e58b86c5d6e7d",
+        "type": "debug",
+        "z": "40c78e1d03c2be2c",
+        "name": "Lightning",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 380,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "8ce3dab90d6641de",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Parse Lightning Strike Data",
+        "func": "var last5kTriggerTimestamp = context.get('last5kTriggerTimestamp') || 0;\nvar last15kTriggerTimestamp = context.get('last15kTriggerTimestamp') || 0;\nvar lastAllTriggerTimestamp = context.get('lastAllTriggerTimestamp') || 0;\nvar currentTime = Math.floor(new Date().getTime() / 1000); // current timestamp in seconds\n\nif (msg.payload.type === 'evt_strike') {\n    var event = msg.payload.evt;\n    var strikeDistance = event[1];\n\n    var timeDiffMinutes5k = (currentTime - last5kTriggerTimestamp) / 60;    \n    var timeDiffMinutes15k = (currentTime - last15kTriggerTimestamp) / 60;\n    var timeDiffMinutesAll = (currentTime - last15kTriggerTimestamp) / 60;\n    \n    // Check distance and time conditions\n    if (strikeDistance < 5 && timeDiffMinutes5k >= 15) {\n        // Update the timestamp of the last trigger\n        context.set('last5kTriggerTimestamp', currentTime);\n        context.set('last15kTriggerTimestamp', currentTime);\n        context.set('lastAllTriggerTimestamp', currentTime);\n        msg.payload = \"WARNING - Lightning Detected within 5km!\";\n        msg.priority = 2;\n        return msg; // Take action on output 2\n    } else if (strikeDistance < 15 && timeDiffMinutes15k >= 15) {\n        // Update the timestamp of the last trigger\n        context.set('last15kTriggerTimestamp', currentTime);\n        context.set('lastAllTriggerTimestamp', currentTime);\n        msg.payload = \"CAUTION - Lightning Detected within 15km\";\n        msg.priority = 1;\n        return msg; // Take action on output 1\n    } else if ( timeDiffMinutesAll >= 15) {\n        // Update the timestamp of the last trigger\n        context.set('lastAllTriggerTimestamp', currentTime);\n        msg.payload = \"Lightning Detected\";\n        msg.priority = 0;\n        return msg; // Take action on output 1\n    }\n}\n\n// If the conditions are not met, return null to take no action\nreturn null;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 400,
+        "wires": [
+            [
+                "5c6e25eb361c2d60",
+                "b89dcbfeb14f4ae5"
+            ]
+        ]
+    },
+    {
+        "id": "5c6e25eb361c2d60",
+        "type": "pushover",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "device": "",
+        "title": "Lightning Warning",
+        "priority": "1",
+        "sound": "",
+        "url": "",
+        "url_title": "",
+        "html": false,
+        "credentials": {
+            "deviceid": "",
+            "pushkey": ""
+        },
+        "x": 910,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "b441890b143a3c5d",
+        "type": "weatherflow-rapid-wind",
+        "z": "40c78e1d03c2be2c",
+        "hub": "92dbd5a05708c0ca",
+        "x": 110,
+        "y": 160,
+        "wires": [
+            [
+                "350d34ea60f4761f"
+            ]
+        ]
+    },
+    {
+        "id": "350d34ea60f4761f",
+        "type": "debug",
+        "z": "40c78e1d03c2be2c",
+        "name": "Wind Data (UDP)",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 410,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "b3d0f6bba9b86ca0",
+        "type": "weatherflow-rain-start",
+        "z": "40c78e1d03c2be2c",
+        "hub": "92dbd5a05708c0ca",
+        "x": 100,
+        "y": 120,
+        "wires": [
+            [
+                "b89dcbfeb14f4ae5"
+            ]
+        ]
+    },
+    {
+        "id": "71bbf3522a481ef0",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Alert on Unsafe",
+        "func": "var roofStatus = global.get('roofStatus') || \"OPEN\"; // Get the roofStatus global variable\nvar warnPeriod = flow.get('warnPeriod') || 6 * 60 * 60;\nvar resetPeriod = flow.get('safetyReset') || 900;\nvar lastUnsafeTime = flow.get('lastUnsafeTime') || 0;\n\n// Get flag variables\nvar rainFlag = flow.get('rainFlag') || false;\nvar windFlag = flow.get('windFlag') || false;\nvar lightningFlag = flow.get('lightningFlag') || false;\n\n// Get wasSafe variable\nvar wasSafe = flow.get('isSafe');\n\n// Get timerFlag variable, or set it to a timestamp more than 6 hours in the past if it doesn't exist\nvar currentTime = Math.floor(new Date().getTime() / 1000); // Get current timestamp\nvar timerFlag = flow.get('timerFlag') || (currentTime - warnPeriod - 1);\n\n// Determine safety condition based on flags\nvar isSafe = !(rainFlag || windFlag || lightningFlag); \n\nif (!isSafe) {\n    flow.set('lastUnsafeTime', currentTime);\n}\n\n// Temporary change for debugging OPEN issues:\n//roofStatus = \"OPEN\";\n// End of Temporary Change\n\n\nif (!isSafe && wasSafe) {\n    // Condition is unsafe, was previously safe, and roof is open\n    flow.set('isSafe', false); // Set isSafe to false\n    if ( roofStatus === \"OPEN\") {\n        flow.set('timerFlag', currentTime); // Set timerFlag to current timestamp\n        return [{payload: \"unsafe\"}, {payload: \"unsafe\"}]; // Send the \"unsafe\" message on output 2\n    } else {\n        return [{payload: \"unsafe\"}, null];\n    }\n} else if ((isSafe && !wasSafe) && (currentTime - lastUnsafeTime > resetPeriod)) {\n    // Condition is safe and was previously unsafe\n    flow.set('isSafe', true); // Set isSafe to true\n    // Check if less than 6 hours have passed since timerFlag was set\n    if (currentTime - timerFlag <= warnPeriod) {\n        // If less than 6 hours have passed\n        return [{payload: \"safe\"}, {payload: \"safe\"}]; // Send the \"safe\" message on both outputs\n    } else {\n        // If more than 6 hours have passed\n        flow.set('timerFlag', currentTime - warnPeriod  - 1); // Reset timerFlag\n        return [{payload: \"safe\"}, null]; // Send the \"safe\" message on output 1\n    }\n}\n\nreturn null; // Don't send any message\n",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "var wasSafe = flow.set('isSafe', true);",
+        "finalize": "",
+        "libs": [],
+        "x": 1220,
+        "y": 220,
+        "wires": [
+            [
+                "1b519f0e941bc33a"
+            ],
+            [
+                "41660123ed86236d",
+                "f77cf942e4acf426"
+            ]
+        ]
+    },
+    {
+        "id": "1b519f0e941bc33a",
+        "type": "debug",
+        "z": "40c78e1d03c2be2c",
+        "name": "Safety Conditions - No Alert",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1480,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "41660123ed86236d",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Create Pushover Notification",
+        "func": "// Check if the payload is \"safe\" or \"unsafe\"\nif (msg.payload === \"unsafe\") {\n    // If it's unsafe, prepare a high-priority warning message\n    return {\n        payload: {\n            topic: \"Unsafe Observing Conditions\",\n            message: \"WARNING - Unsafe observing conditions detected and roof is open!\",\n            priority: 2\n        }\n    };\n} else if (msg.payload === \"safe\") {\n    // If it's safe, prepare a lower-priority notice message\n    return {\n        payload: {\n            topic: \"Safe for Observing\",\n            message: \"Notice - Safe observing conditions have been restored.\",\n            priority: 1\n        }\n    };\n}\n\n// If the payload isn't \"safe\" or \"unsafe\", don't send a message\nreturn null;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1480,
+        "y": 220,
+        "wires": [
+            [
+                "823f698bfa709a69"
+            ]
+        ]
+    },
+    {
+        "id": "823f698bfa709a69",
+        "type": "pushover",
+        "z": "40c78e1d03c2be2c",
+        "name": "Safety Conditions Notifications",
+        "device": "",
+        "title": "",
+        "priority": "",
+        "sound": "",
+        "url": "",
+        "url_title": "",
+        "html": false,
+        "credentials": {
+            "deviceid": "",
+            "pushkey": ""
+        },
+        "x": 1790,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "f77cf942e4acf426",
+        "type": "debug",
+        "z": "40c78e1d03c2be2c",
+        "name": "Safety Conditions - Alert",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1470,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "b89dcbfeb14f4ae5",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Safety Monitor (consoldiated)",
+        "func": "var currentData = flow.get('tempestData'); // Get current data from the Tempest weather station\nvar resetPeriod = flow.get('safetyReset') || 900; // Get safety reset period\n\n// Variables for rain\nvar rainFlag = flow.get('rainFlag') || false;\nvar lastRainTime = flow.get('lastRainTime') || 0;\nvar rainThreshold = flow.get('rainThreshold') || 0;\n\n// Variables for wind\nvar windFlag = flow.get('windFlag') || false;\nvar lastWindEventTime = flow.get('lastWindEventTime') || 0;\nvar windThreshold = flow.get('windThreshold') || 20 / 3.6;\nvar gustThreshold = flow.get('gustThreshold') || 35 / 3.6;\n\n// Variables for lightning\nvar lightningFlag = flow.get('lightningFlag') || false;\nvar lastLightning = flow.get('lastLightning') || 0;\nvar strikeThreshold = flow.get('strikeThreshold') || 5;\n\nvar currentTime = Date.now() / 1000; // Get current time (in seconds)\n\n// Check rain\nif (currentData) {\n    var rainRate = currentData.rainAmountOverPreviousMinute;\n    if (rainRate > rainThreshold || msg.payload.type == \"evt_precip\") {\n        rainFlag = true;\n        lastRainTime = currentData.timestamp;\n    } else if (currentTime - lastRainTime > resetPeriod) {\n        rainFlag = false;\n    }\n    flow.set('rainFlag', rainFlag);\n    flow.set('lastRainTime', lastRainTime);\n\n    // Check wind\n    var windSpeed = currentData.windAvg;\n    var windGust = currentData.windGust;\n    if (windSpeed >= windThreshold || windGust >= gustThreshold) {\n        windFlag = true;\n        lastWindEventTime = currentData.timestamp;\n    } else if (currentTime - lastWindEventTime > resetPeriod) {\n        windFlag = false;\n    }\n    flow.set('windFlag', windFlag);\n    flow.set('lastWindEventTime', lastWindEventTime);\n}\n\n// Check lightning\nif (msg.payload.type === 'evt_strike') {\n    var event = msg.payload.evt;\n    var strikeDistance = event[1];\n    if (strikeDistance < strikeThreshold) {\n        flow.set('lastLightning', currentTime);\n        lightningFlag = true;\n    }\n} else if ((currentTime - lastLightning) > resetPeriod) {\n    lightningFlag = false;\n}\nflow.set('lightningFlag', lightningFlag);\n\n// Finally, check if any unsafe flag is set and return the appropriate message\nif (rainFlag || windFlag || lightningFlag) {\n    return { payload: \"unsafe\" };\n} else {\n    return { payload: \"safe\" };\n}\n\nreturn null;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 960,
+        "y": 220,
+        "wires": [
+            [
+                "71bbf3522a481ef0"
+            ]
+        ]
+    },
+    {
+        "id": "0dc5d2ebcda521dd",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Driver Version",
+        "url": "/api/v1/safetymonitor/0/driverversion",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 1660,
+        "wires": [
+            [
+                "e470bd2e357f0be5"
+            ]
+        ]
+    },
+    {
+        "id": "e470bd2e357f0be5",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "GET DriverInfo",
+        "func": "let version = flow.get('version');\n\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": version\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 1660,
+        "wires": [
+            [
+                "c8d4acef2186e852"
+            ]
+        ]
+    },
+    {
+        "id": "c8d4acef2186e852",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 490,
+        "y": 1660,
+        "wires": []
+    },
+    {
+        "id": "1c65fa01c64ae364",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Driver Info",
+        "url": "/api/v1/safetymonitor/0/driverinfo",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 1600,
+        "wires": [
+            [
+                "dbe9107b0ad09846"
+            ]
+        ]
+    },
+    {
+        "id": "dbe9107b0ad09846",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "GET DriverInfo",
+        "func": "let version = flow.get('version');\n\n\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": version\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 1600,
+        "wires": [
+            [
+                "6264332f5e2d53c0"
+            ]
+        ]
+    },
+    {
+        "id": "6264332f5e2d53c0",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 490,
+        "y": 1600,
+        "wires": []
+    },
+    {
+        "id": "93b6bd87feafbdd2",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Description",
+        "url": "/api/v1/safetymonitor/0/description",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 1540,
+        "wires": [
+            [
+                "8fc826874f61d861"
+            ]
+        ]
+    },
+    {
+        "id": "8fc826874f61d861",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "GET Description",
+        "func": "\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": \"Tempest Weather Station via NodeRED - Safety Monitor\" // Change this later... static for now\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 1540,
+        "wires": [
+            [
+                "1a5978150931d480"
+            ]
+        ]
+    },
+    {
+        "id": "1a5978150931d480",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 490,
+        "y": 1540,
+        "wires": []
+    },
+    {
+        "id": "047d1383dabcdf8d",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Name",
+        "url": "/api/v1/safetymonitor/0/name",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 1480,
+        "wires": [
+            [
+                "05df4728ba5687fa"
+            ]
+        ]
+    },
+    {
+        "id": "05df4728ba5687fa",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "GET Name",
+        "func": "\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": \"Tempest Safety Monitor\" // Change this later... static for now\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 1480,
+        "wires": [
+            [
+                "72a29bd468eb2678"
+            ]
+        ]
+    },
+    {
+        "id": "72a29bd468eb2678",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 490,
+        "y": 1480,
+        "wires": []
+    },
+    {
+        "id": "18a08c2cf7156c14",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Interface Version",
+        "url": "/api/v1/safetymonitor/0/interfaceversion",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 1720,
+        "wires": [
+            [
+                "4f6dad429fedccc7"
+            ]
+        ]
+    },
+    {
+        "id": "4f6dad429fedccc7",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "GET Interface",
+        "func": "\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": 1 // Change this later... static for now\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 1720,
+        "wires": [
+            [
+                "6696c6c767ff90ae"
+            ]
+        ]
+    },
+    {
+        "id": "6696c6c767ff90ae",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 490,
+        "y": 1720,
+        "wires": []
+    },
+    {
+        "id": "eee21a1149552ff2",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Supported Actions",
+        "url": "/api/v1/safetymonitor/0/supportedactions",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 1780,
+        "wires": [
+            [
+                "96f4c91abc5073e7"
+            ]
+        ]
+    },
+    {
+        "id": "96f4c91abc5073e7",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "GET Actions",
+        "func": "msg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": [\n      {\n        \"Action\": \"SetValues\",\n        \"Parameters\": {\n          \"rainThreshold\": \"mm/min\",\n          \"windThreshold\": \"kph\",\n          \"gustThreshold\": \"kph\",\n          \"strikeThreshold\": \"km\",\n          \"resetPeriod\": \"seconds\",\n          \"warnPeriod\": \"seconds\"\n        },\n        \"Comments\": \"Individual parameters are optional.  Pass as decimal or integer values not as strings.\"\n      }\n    ]\n};\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 1780,
+        "wires": [
+            [
+                "1f6d71f9a9d9193d"
+            ]
+        ]
+    },
+    {
+        "id": "1f6d71f9a9d9193d",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 490,
+        "y": 1780,
+        "wires": []
+    },
+    {
+        "id": "2176b020bfdb5276",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Connected",
+        "url": "/api/v1/safetymonitor/0/connected",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 1420,
+        "wires": [
+            [
+                "027edd99f313e632"
+            ]
+        ]
+    },
+    {
+        "id": "027edd99f313e632",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "GET Connected",
+        "func": "\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": true // TODO: Revise to trigger state from watchdog timer\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 1420,
+        "wires": [
+            [
+                "158a5a5041570eee"
+            ]
+        ]
+    },
+    {
+        "id": "158a5a5041570eee",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 490,
+        "y": 1420,
+        "wires": []
+    },
+    {
+        "id": "e87d4a3e3d111be3",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Action",
+        "url": "/api/v1/safetymonitor/0/action",
+        "method": "put",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 1840,
+        "wires": [
+            [
+                "c4020d50fbc42e7f",
+                "b3afca40596c1fff"
+            ]
+        ]
+    },
+    {
+        "id": "2d96290eb847e304",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "GET isSafe",
+        "func": "var isSafe = flow.get('isSafe') || false;\n\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"ErrorNumber\": 0,\n   \"ErrorMessage\": \"\",\n   \"Value\": isSafe // Change this later... static for now\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 1360,
+        "wires": [
+            [
+                "0c0247ca3cc93498"
+            ]
+        ]
+    },
+    {
+        "id": "e8151960625bc871",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "isSafe",
+        "url": "/api/v1/safetymonitor/0/issafe",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 1360,
+        "wires": [
+            [
+                "2d96290eb847e304"
+            ]
+        ]
+    },
+    {
+        "id": "0c0247ca3cc93498",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 490,
+        "y": 1360,
+        "wires": []
+    },
+    {
+        "id": "c4020d50fbc42e7f",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "PUT Actions",
+        "func": "\nvar payload = msg.payload;\n\nif (payload.hasOwnProperty(\"Action\") && payload.hasOwnProperty(\"Parameters\")) {\n    var parameters;\n    var action;\n    node.warn(\"Got a valid action request...\")\n    action = payload.Action;\n    \n    if (action == \"SetValues\") {\n        node.warn(\"Setting new values...\");\n        try {\n            parameters = JSON.parse(payload.Parameters);\n            node.warn(\"Parsed Parameters: \" + JSON.stringify(parameters));\n    \n            if (parameters.hasOwnProperty(\"rainThreshold\")) {\n                flow.set(\"rainThreshold\", parameters.rainThreshold);\n                node.warn(\"Set rainThreshold to: \" + parameters.rainThreshold);\n            }\n            \n            if (parameters.hasOwnProperty(\"windThreshold\")) {\n                flow.set(\"windThreshold\", parameters.windThreshold);\n                node.warn(\"Set windThreshold to: \" + parameters.windThreshold);\n            }\n            \n            if (parameters.hasOwnProperty(\"gustThreshold\")) {\n                flow.set(\"gustThreshold\", parameters.gustThreshold);\n                node.warn(\"Set gustThreshold to: \" + parameters.gustThreshold);\n            }\n            \n            if (parameters.hasOwnProperty(\"strikeThreshold\")) {\n                flow.set(\"strikeThreshold\", parameters.strikeThreshold);\n                node.warn(\"Set strikeThreshold to: \" + parameters.strikeThreshold);\n            }\n            \n            if (parameters.hasOwnProperty(\"resetPeriod\")) {\n                flow.set(\"safetyReset\", parameters.resetPeriod);\n                node.warn(\"Set resetPeriod to: \" + parameters.resetPeriod);\n            }\n    \n            if (parameters.hasOwnProperty(\"warnPeriod\")) {\n                flow.set(\"warnPeriod\", payload.warnPeriod);\n                node.warn(\"Set warnPeriod to: \" + parameters.warnPeriod);\n            }\n    \n            msg.payload = {\n                \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n                \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n                \"ErrorNumber\": 0,\n                \"ErrorMessage\": \"\",\n            };\n            return msg;\n        } catch (e) {\n            node.error(\"Failed to parse Parameters: \" + e);\n            // You may want to return or throw the error here, or handle it in some other way\n        }\n    } else if (action == \"GetValues\") {\n        var rainThreshold = (flow.get(\"rainThreshold\") !== null && flow.get(\"rainThreshold\") !== undefined) ? flow.get(\"rainThreshold\") : false;\n        var windThreshold = flow.get(\"windThreshold\") || false;\n        var gustThreshold = flow.get(\"gustThreshold\") || false;\n        var strikeThreshold = flow.get(\"strikeThreshold\") || false;\n        var resetPeriod = flow.get(\"safetyReset\") || false;\n        var warnPeriod = flow.get(\"warnPeriod\") || false;\n        \n        var valueString = {\n            \"rainThreshold\": rainThreshold,\n            \"windThreshold\": windThreshold,\n            \"gustThreshold\": gustThreshold,\n            \"strikeThreshold\": strikeThreshold,\n            \"resetPeriod\": resetPeriod,\n            \"warnPeriod\": warnPeriod\n        };\n        \n        msg.payload = {\n            \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n            \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n            \"ErrorNumber\": 0,\n            \"ErrorMessage\": \"\",\n            \"Value\": valueString\n        };\n        \n        return msg;\n    }\n    \n }\nmsg.payload = {\n    \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n    \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n    \"ErrorNumber\": 0x400, // Put the error number you wish here\n    \"ErrorMessage\": \"Not Implemented\", // Put the error message you wish here\n};\n    \nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 1840,
+        "wires": [
+            [
+                "f9580c98f4490f74"
+            ]
+        ]
+    },
+    {
+        "id": "f9580c98f4490f74",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 490,
+        "y": 1840,
+        "wires": []
+    },
+    {
+        "id": "b3afca40596c1fff",
+        "type": "debug",
+        "z": "40c78e1d03c2be2c",
+        "name": "SM - Actions Debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 340,
+        "y": 1880,
+        "wires": []
+    },
+    {
+        "id": "f3877a56a37d6fb3",
+        "type": "udp in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Alpaca Discovery",
+        "iface": "",
+        "port": "32227",
+        "ipv": "udp4",
+        "multicast": "false",
+        "group": "",
+        "datatype": "buffer",
+        "x": 120,
+        "y": 2000,
+        "wires": [
+            [
+                "2e48b87cb1d90baf",
+                "db45e83f24bba15d"
+            ]
+        ]
+    },
+    {
+        "id": "2e48b87cb1d90baf",
+        "type": "debug",
+        "z": "40c78e1d03c2be2c",
+        "name": "Alpaca Listener",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 380,
+        "y": 2040,
+        "wires": []
+    },
+    {
+        "id": "db45e83f24bba15d",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Alpaca Discovery Response",
+        "func": "const DISCOVERY_MESSAGE = 'alpacadiscovery1';\nlet alpacaPort = flow.get('alpacaPort');\n\n// Check if payload matches the expected Alpaca Discovery message\nif (msg.payload.toString() === DISCOVERY_MESSAGE) {\n    // If it matches, prepare response\n    msg.payload = JSON.stringify({\"AlpacaPort\": alpacaPort});\n    return msg;\n}\n\nreturn null;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 2000,
+        "wires": [
+            [
+                "d3a909e8acc0b741",
+                "49591aec0530e8c4"
+            ]
+        ]
+    },
+    {
+        "id": "d3a909e8acc0b741",
+        "type": "debug",
+        "z": "40c78e1d03c2be2c",
+        "name": "Listener Response",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 710,
+        "y": 2040,
+        "wires": []
+    },
+    {
+        "id": "49591aec0530e8c4",
+        "type": "udp out",
+        "z": "40c78e1d03c2be2c",
+        "name": "Alpaca Discovery UDP Out",
+        "addr": "",
+        "iface": "",
+        "port": "",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 740,
+        "y": 2000,
+        "wires": []
+    },
+    {
+        "id": "9b765314654f37c8",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Serve API Versions",
+        "func": "msg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"Value\": [1]\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 2160,
+        "wires": [
+            [
+                "507dfbea82b2f59e"
+            ]
+        ]
+    },
+    {
+        "id": "507dfbea82b2f59e",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 660,
+        "y": 2160,
+        "wires": []
+    },
+    {
+        "id": "1a5f3698aacd4b28",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "API Versions",
+        "url": "/management/apiversions",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 2160,
+        "wires": [
+            [
+                "9b765314654f37c8"
+            ]
+        ]
+    },
+    {
+        "id": "9315e6f6a5db738c",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Serve Configured Devices",
+        "func": "let alpacaUID = flow.get('alpacaUID');\n\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"Value\": [\n       {\n           \"DeviceName\": \"Tempest Weather Conditions\",\n           \"DeviceType\": \"Observingconditions\",\n           \"DeviceNumber\": 0,\n           \"UniqueID\":  alpacaUID\n       },{\n           \"DeviceName\": \"Tempest Weather Safety Monitor\",\n           \"DeviceType\": \"safetymonitor\",\n           \"DeviceNumber\": 0,\n           \"UniqueID\":  alpacaUID\n       },{\n           \"DeviceName\": \"JPL - Roll Off Roof Controller via NodeRED\",\n           \"DeviceType\": \"dome\",\n           \"DeviceNumber\": 0,\n           \"UniqueID\":  alpacaUID\n       }]\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 2220,
+        "wires": [
+            [
+                "9571273e6ea91359"
+            ]
+        ]
+    },
+    {
+        "id": "9571273e6ea91359",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 660,
+        "y": 2220,
+        "wires": []
+    },
+    {
+        "id": "a6b2801a58c35ced",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Configured Devices",
+        "url": "/management/v1/configureddevices",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 2220,
+        "wires": [
+            [
+                "9315e6f6a5db738c"
+            ]
+        ]
+    },
+    {
+        "id": "dc02f5eba246a27f",
+        "type": "function",
+        "z": "40c78e1d03c2be2c",
+        "name": "Serve Description",
+        "func": "let version = flow.get('version');\n\nmsg.payload = {\n   \"ClientTransactionID\": msg.req.query.ClientTransactionID,\n   \"ServerTransactionID\": Math.floor(Date.now() / 1000), // Current Unix timestamp\n   \"Value\": \n       {\n           \"ServerName\": \"jpl.iot.local\",\n           \"Manufacturer\": \"Corey Smart\",\n           \"ManufacturerVersion\": version,\n           \"Location\":  \"Sundance Trail Obersvatory, AB, Canada\"\n       }\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 2280,
+        "wires": [
+            [
+                "3bba421c22528341"
+            ]
+        ]
+    },
+    {
+        "id": "3bba421c22528341",
+        "type": "http response",
+        "z": "40c78e1d03c2be2c",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 660,
+        "y": 2280,
+        "wires": []
+    },
+    {
+        "id": "58f6be810bf8fda7",
+        "type": "http in",
+        "z": "40c78e1d03c2be2c",
+        "name": "Description",
+        "url": "/management/v1/description",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 2280,
+        "wires": [
+            [
+                "dc02f5eba246a27f"
+            ]
+        ]
+    },
+    {
+        "id": "92dbd5a05708c0ca",
+        "type": "weatherflow-hub",
+        "host": "0.0.0.0",
+        "port": "50222"
+    }
+]
